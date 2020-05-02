@@ -34,7 +34,7 @@ ModbusRTUServerClass::~ModbusRTUServerClass()
 {
 }
 
-int ModbusRTUServerClass::begin(int id, unsigned long baudrate, uint16_t config)
+int ModbusRTUServerClass::begin(int id, unsigned long baudrate, uint16_t config, unsigned max_req_size)
 {
   modbus_t* mb = modbus_new_rtu(baudrate, config);
 
@@ -43,13 +43,14 @@ int ModbusRTUServerClass::begin(int id, unsigned long baudrate, uint16_t config)
   }
 
   modbus_connect(mb);
+  _max_request_size = max_req_size;
 
   return 1;
 }
 
 void ModbusRTUServerClass::poll()
 {
-  uint8_t request[MODBUS_RTU_MAX_ADU_LENGTH];
+  uint8_t request[_max_request_size];
 
   int requestLength = modbus_receive(_mb, request);
 
